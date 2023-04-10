@@ -1,0 +1,1 @@
+archivo1.txt, 1000000 bytes, 0.008764 segundos

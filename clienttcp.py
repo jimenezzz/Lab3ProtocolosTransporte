@@ -4,6 +4,7 @@ from _thread import *
 from threading import Thread
 from datetime import datetime
 import os
+import hashlib
 
 PATH_ARCHIVOS_RECIBIDOS = "./ArchivosRecibidos/"
 PATH_LOGS = "./LogsCliente/"
@@ -30,7 +31,7 @@ def write_log(time1, filename, filesize, received_file):
     f.close()
 
 # Threaded function
-def threaded(num_cliente, cantidad_conexiones):
+def threaded(num_cliente, cantidad_conexiones, ):
     server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
     # Connect to server on local computer
@@ -38,6 +39,8 @@ def threaded(num_cliente, cantidad_conexiones):
     server.connect((HOST, PORT))
     print("Recibiendo archivo...")
     data = server.recv(CHUNK_SIZE)
+    hash=server.recv(CHUNK_SIZE).decode()
+    print(hash)
     filename, filesize = data.decode().split("-")
     time1 = datetime.now()
     nombreArchivo = PATH_ARCHIVOS_RECIBIDOS+"Cliente"+str(num_cliente)+"-Prueba-"+str(cantidad_conexiones)+".txt"

@@ -2,6 +2,7 @@ import socket
 from _thread import *
 import threading
 from datetime import datetime
+import hashlib
 import os
 import sys
 
@@ -11,29 +12,37 @@ CHUNK_SIZE = 65536
 HOST = ''
 PORT = 2002
 
-ARCHIVO_MANDAR = 'archivo1.txt'
+#ARCHIVO_MANDAR = 'archivo1.txt'
 print_lock = threading.Lock()
 
-def write_log(time1):
+def write_log(time1, arch):
     time2 = datetime.now()
     time_diff = time2 - time1
     tsecs = time_diff.total_seconds()
     format = time2.strftime('%Y-%m-%d-%H-%M-%S')
 
     f = open(PATH_LOGS+format+"-log.txt", "a")
-    f.write(ARCHIVO_MANDAR+", "+str(os.path.getsize(PATH_ARCHIVOS+ARCHIVO_MANDAR))+" bytes, "+str(tsecs)+" segundos\n")
+    f.write(arch+", "+str(os.path.getsize(PATH_ARCHIVOS+arch))+" bytes, "+str(tsecs)+" segundos\n")
     f.close()
 
 # Threaded function
-def threaded(client, addr):
+def threaded(client, addr, archivo):
     print(f'Conexión establecida a {addr}.')
     time1 = datetime.now()
 
     #Se envia nombre del archivo y tamaño
-    client.send((ARCHIVO_MANDAR+"-"+str(os.path.getsize(PATH_ARCHIVOS+ARCHIVO_MANDAR))).encode())
+    client.send((archivo+"-"+str(os.path.getsize(PATH_ARCHIVOS+archivo))).encode())
+
+    #Se calcula el Hash del archivo
+    hashmd5 = hashlib.md5() 
+    with open(PATH_ARCHIVOS+archivo, 'rb') as f:
+        for bloque in iter(lambda: f.read(4096), b""):
+                hashmd5.update(bloque)
+    client.send(hashmd5.hexdigest().encode())    
+    print(hashmd5.hexdigest())        
 
     # Abrir el archivo para lectura
-    with open(PATH_ARCHIVOS+ARCHIVO_MANDAR, 'rb') as f:
+    with open(PATH_ARCHIVOS+archivo, 'rb') as f:
         while True:
             # Leer un chunk del archivo
             chunk = f.read(CHUNK_SIZE)
@@ -44,13 +53,18 @@ def threaded(client, addr):
             # Enviar el chunk al cliente
             client.send(chunk)
 
-    write_log(time1)
+    write_log(time1,archivo)
 
     # Connection closed
     client.close()
     print(f'Conexión cerrada a {addr}.')
 
 def main():
+   archivo=input("¿Que archivo desea enviar? (1:100MB, 2:250MB)")
+   if archivo=="1":
+       arch = 'archivo1.txt'
+   else:
+       arch = 'archivo2.txt'    
    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
    server.bind((HOST, PORT))
    print("Enlace al puerto", PORT)
@@ -67,7 +81,7 @@ def main():
        print_lock.acquire()
 
        # Start the new thread and return its identifier
-       start_new_thread(threaded, (c,addr))
+       start_new_thread(threaded, (c,addr,arch))
    server.close()
 
 if __name__ == '__main__':

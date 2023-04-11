@@ -1,4 +1,4 @@
-# Lab3ProtocolosTransporte
+# Laboratorio 3 Redes
 
 ## Paso 1: Creación archivos
 Para ejecutar el servidor y el cliente de cualquiera de los dos protocolos, TCP o UDP, primero se tienen que crear los archivos a transmitir. Para eso se corre el script filecreation.py, de la siguiente forma:

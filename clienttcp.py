@@ -10,7 +10,7 @@ PATH_ARCHIVOS_RECIBIDOS = "./ArchivosRecibidos/"
 PATH_LOGS = "./LogsCliente/"
 ARCHIVO_RECIBIR = 'archivo_recibido.txt'
 CHUNK_SIZE = 65536
-HOST = '192.168.187.128'
+HOST = '127.0.0.1'
 PORT = 2002
 
 NUM_CLIENTES = 1

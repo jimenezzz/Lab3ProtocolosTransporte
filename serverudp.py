@@ -56,7 +56,6 @@ def main():
     print("Enlace al puerto", PORT)
 
     # Put the socket into listening mode
-    #server.listen(5)
     print("Esperando conexión...")
 
     # An infinite loop until the client exits

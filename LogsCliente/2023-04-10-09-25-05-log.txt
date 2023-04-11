@@ -1,1 +1,0 @@
-archivo1.txt, archivo recibido correctamente, tamaño original 1000000 bytes, 1000000 bytes recibidos, 0.001523 segundos
